@@ -77,7 +77,7 @@ module Git = struct
     in
 
     let build =
-      stage ~from:"ocaml/opam:ubuntu-ocaml-4.11"
+      stage ~from:"ocaml/opam:debian-11-ocaml-4.14"
       @@ [
            user_unix ~uid:1000 ~gid:1000;
            run ~network "sudo apt install -y m4 pkg-config";
@@ -89,7 +89,7 @@ module Git = struct
            env "DUNE_CACHE_DUPLICATION" "copy";
            env "DUNE_CACHE_TRANSPORT" "direct";
            run ~network ~cache
-             "opam depext -ui ocaml-freestanding mirage opam-monorepo";
+             "opam install mirage.4.3.6 opam-monorepo";
            run "mkdir -p %s" config_file_dir;
            workdir config_file_dir;
            copy ~from:`Context
