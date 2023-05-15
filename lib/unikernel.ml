@@ -90,7 +90,7 @@ module Git = struct
            env "DUNE_CACHE_DUPLICATION" "copy";
            env "DUNE_CACHE_TRANSPORT" "direct";
            run ~network ~cache
-             "opam install mirage.4.3.6 opam-monorepo ";
+             "opam install mirage opam-monorepo ";
            run "mkdir -p %s" config_file_dir;
            workdir config_file_dir;
            copy ~from:`Context
