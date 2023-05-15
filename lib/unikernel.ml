@@ -82,7 +82,8 @@ module Git = struct
            user_unix ~uid:1000 ~gid:1000;
            run ~network "sudo apt install -y m4 pkg-config";
            run ~network
-             "cd ~/opam-repository && git pull origin master && git reset \
+             "sudo ln -f /usr/bin/opam-2.1 /usr/bin/opam && \
+              cd ~/opam-repository && git pull origin master && git reset \
               --hard %s && opam update"
              opam_repository_commit;
            env "DUNE_CACHE" "enabled";
