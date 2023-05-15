@@ -85,9 +85,6 @@ module Git = struct
              "cd ~/opam-repository && git pull origin master && git reset \
               --hard %s && opam update"
              opam_repository_commit;
-           run ~network
-             "opam repo add mirage-dev \
-              https://github.com/mirage/mirage-dev.git#0c7c0a14240236bf00c5ccdceab0612f09cbe339";
            env "DUNE_CACHE" "enabled";
            env "DUNE_CACHE_DUPLICATION" "copy";
            env "DUNE_CACHE_TRANSPORT" "direct";
