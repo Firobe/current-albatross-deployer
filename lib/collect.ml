@@ -31,11 +31,9 @@ module OpCollect (C : Client.S) = struct
     let deployed_services =
       StringSet.of_list (List.map (fun t -> t.Published.service) roots)
     in
-    (*
-    let deployed_services_full =
+    let root_tags =
       StringSet.of_list (List.map (fun t -> t.Published.info.config.id) roots)
     in
-    *)
     let perform ~socket =
       (* Step 1: daemon: remove unused deployments *)
       let** deployments =
@@ -70,7 +68,7 @@ module OpCollect (C : Client.S) = struct
         |> StringSet.of_list
       in
 
-      (* Step 1.5: collect IPs and unikernel tags *)
+      (* Step 1.5: collect IPs *)
       let** ips =
         Client.IpManager.list ~socket () |> Lwt.map Utils.remap_errors
       in
@@ -79,10 +77,6 @@ module OpCollect (C : Client.S) = struct
           (fun (ip : Iptables_daemon_api.Types.Ip.t) ->
             not (StringSet.mem (Ipaddr.V4.to_string ip.ip) ips_to_keep))
           ips
-      in
-      let removed_ips_tags =
-        List.map (fun ip -> ip.Iptables_daemon_api.Types.Ip.tag) ips_to_remove
-        |> StringSet.of_list
       in
       (* Step 2: albatross: remove unikernels starting by a deployment's service
          name *)
@@ -97,7 +91,7 @@ module OpCollect (C : Client.S) = struct
             let name_real = Vmm_core.Name.name name |> Option.get in
             let tag = String.sub tag 1 (String.length tag - 1) in
             Current.Job.log job "- %s (%s)" tag name_real;
-            StringSet.mem tag removed_ips_tags)
+            not (StringSet.mem tag root_tags))
           unikernels
       in
       Current.Job.log job "Remove them:";
