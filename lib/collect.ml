@@ -122,6 +122,8 @@ let collect ?(mode = `Socket) deployments =
   let module C = (val Client.client_of_mode mode) in
   let module Collect = Current_cache.Make (OpCollect (C)) in
   let open Current.Syntax in
+  (* Do not cache collection *)
+  let schedule = Current_cache.Schedule.v ~valid_for:(Duration.of_sec 20) () in
   Current.component "collect"
   |> let> deployments = deployments in
-     Collect.get No_context deployments
+     Collect.get ~schedule No_context deployments
