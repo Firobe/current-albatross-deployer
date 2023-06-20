@@ -31,6 +31,11 @@ module OpCollect (C : Client.S) = struct
     let deployed_services =
       StringSet.of_list (List.map (fun t -> t.Published.service) roots)
     in
+    (*
+    let deployed_services_full =
+      StringSet.of_list (List.map (fun t -> t.Published.info.config.id) roots)
+    in
+    *)
     let perform ~socket =
       (* Step 1: daemon: remove unused deployments *)
       let** deployments =
@@ -89,8 +94,9 @@ module OpCollect (C : Client.S) = struct
         List.filter
           (fun (name, _) ->
             let tag = Vmm_core.Name.to_string name in
+            let name_real = Vmm_core.Name.name name |> Option.get in
             let tag = String.sub tag 1 (String.length tag - 1) in
-            Current.Job.log job "- %s" tag;
+            Current.Job.log job "- %s (%s)" tag name_real;
             StringSet.mem tag removed_ips_tags)
           unikernels
       in
